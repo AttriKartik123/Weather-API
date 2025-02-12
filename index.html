@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+            color: black;
+            text-align: center;
+            flex-direction: column;
+            transition: background 0.5s ease-in-out;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 420px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        input {
+            width: 85%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.5);
+            color: black;
+            outline: none;
+        }
+        input::placeholder {
+            color: black;
+        }
+        button {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: #ff7eb3;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.3s ease-in-out, background 0.3s;
+        }
+        button:hover {
+            background: #ff4f81;
+            transform: scale(1.1);
+        }
+        .weather-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .weather-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            width: 320px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            backdrop-filter: blur(10px);
+            font-size: 22px;
+            text-align: center;
+            color: black;
+            font-weight: bold;
+        }
+        .weather-card.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        img {
+            max-width: 100px;
+            height: auto;
+            margin-top: 10px;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🌦️ Weather App</h2>
+        <div class="input-container">
+            <input type="text" id="location" placeholder="Enter location">
+            <button onclick="getWeather()">Get Weather</button>
+        </div>
+        <div class="weather-container" id="weather-container"></div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const location = document.getElementById('location').value;
+            if (!location) {
+                alert('Please enter a location');
+                return;
+            }
+            const apiKey = '9ae0287f594440218cb100408251202';
+            const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=yes`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.error) {
+                    alert("Location not found");
+                    return;
+                }
+                const temp = data.current.temp_c;
+                const condition = data.current.condition.text;
+                const cityName = data.location.name;
+                const icon = data.current.condition.icon;
+                
+                const weatherContainer = document.getElementById('weather-container');
+                const weatherCard = document.createElement('div');
+                weatherCard.classList.add('weather-card', 'show');
+                weatherCard.innerHTML = `<strong>${cityName}</strong><br><img src="https:${icon}" alt="Weather Icon"><br>Temperature: ${temp}°C <br> Condition: ${condition}`;
+                
+                weatherContainer.appendChild(weatherCard);
+            } catch (error) {
+                alert("Error fetching data");
+            }
+        }
+    </script>
+</body>
+</html>
